@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using UnityEngineAnalyzer.CLI.Reporting;
 
@@ -89,6 +90,25 @@ namespace UnityEngineAnalyzer.CLI
                 
                 Console.WriteLine("There was an exception running the analysis");
                 Console.WriteLine(generalException.ToString());
+                var aggEx = generalException as AggregateException;
+                foreach (var aggedEx in aggEx.InnerExceptions)
+                {
+
+                    if (aggedEx is ReflectionTypeLoadException)
+                    {
+                        var typeLoadException = aggedEx as ReflectionTypeLoadException;
+                        var loaderExceptions = typeLoadException.LoaderExceptions;
+
+                        foreach (var ex in loaderExceptions)
+                        {
+                            Console.WriteLine(ex.ToString());
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine(aggedEx.Message);
+                    }
+                }
             }
         }
 

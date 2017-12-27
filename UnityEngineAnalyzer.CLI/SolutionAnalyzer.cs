@@ -83,6 +83,7 @@ namespace UnityEngineAnalyzer.CLI
         private async Task AnalyzeProject(Project project, ImmutableArray<DiagnosticAnalyzer> analyzers,
             AnalyzerReport report)
         {
+            Console.WriteLine("AnalyzeProject");
             try
             {
                 var compilation = await project.GetCompilationAsync();
@@ -93,10 +94,9 @@ namespace UnityEngineAnalyzer.CLI
             }
             catch (Exception exception)
             {
+                Console.WriteLine("EXCEPTION!!");
                 report.NotifyException(exception);
             }
-
-
         }
     }
 }
