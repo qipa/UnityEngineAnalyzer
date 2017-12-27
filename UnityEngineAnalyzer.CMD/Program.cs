@@ -8,6 +8,9 @@ using Microsoft.CodeAnalysis.CSharp.Symbols;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.Text;
+using UnityEngineAnalyzer.CMD.Core;
+using UnityEngineAnalyzer.CMD.Installers;
+using Zenject;
 
 namespace UnityEngineAnalyzer.CMD
 {
@@ -15,6 +18,19 @@ namespace UnityEngineAnalyzer.CMD
     {
         static void Main(string[] args)
         {
+            var container = new DiContainer();
+            UtilitiesInstaller.Install(container);
+            CoreInstaller.Install(container);
+
+            var mockOptions = new Options()
+            {
+                ProjectDirectoryPath = "MYDIRPATH"
+            };
+
+            var analyzer = container.Resolve<IUnityProjectAnalyzer>();
+            analyzer.Analyze(mockOptions);
+            /*
+
             var ws = MSBuildWorkspace.Create();
             var soln = ws.OpenSolutionAsync(@"E:\Bitbucket\Work\commanders\commanders.sln").Result;
             var proj = soln.Projects.Single();
@@ -36,17 +52,13 @@ namespace UnityEngineAnalyzer.CMD
                         foreach (var b in bases.Types)
                         {
                             var nodeType = compilation.GetSemanticModel(tree).GetTypeInfo(b.Type);
-
-                            // Is the node a System.Windows.Forms.Form?
-                            if (nodeType.Type.Equals(testAttributeType))
-                            {
-                                Console.WriteLine(classDec.Identifier.Text);
-                            }
+                            Console.WriteLine(classDec.Identifier.Text);
                         }
                     }
                 }
             }
             Console.ReadKey();
+            */
         }
     }
 }

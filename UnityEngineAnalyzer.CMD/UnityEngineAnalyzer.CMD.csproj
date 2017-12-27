@@ -7,9 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Libraries\**" />
+    <EmbeddedResource Remove="Libraries\**" />
+    <None Remove="Libraries\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Build" Version="15.3.409" />
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.3.409" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Zenject">
+      <HintPath>Libraries\Zenject.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
