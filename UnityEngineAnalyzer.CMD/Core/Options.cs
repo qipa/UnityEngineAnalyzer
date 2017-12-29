@@ -12,5 +12,6 @@ namespace UnityEngineAnalyzer.CMD.Core
     public class Options
     {
         public string ProjectDirectoryPath { get; set; }
+        public string[] ExcludePathPatterns { get; set; }
     }
 }

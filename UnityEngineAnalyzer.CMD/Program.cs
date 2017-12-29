@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Symbols;
@@ -17,6 +18,8 @@ namespace UnityEngineAnalyzer.CMD
 {
     class Program
     {
+        public static bool Regexp { get; private set; }
+
         static void Main(string[] args)
         {
             var container = new DiContainer();
@@ -26,7 +29,11 @@ namespace UnityEngineAnalyzer.CMD
 
             var mockOptions = new Options()
             {
-                ProjectDirectoryPath = "MyPROJECTDIRECTORY"
+                ProjectDirectoryPath = "MYFOLDER",
+                ExcludePathPatterns = new string[] {
+                    @"[\""\'\\/]\b(ThirdParty)\b[\""\'\\/]",
+                    @"[\""\'\\/]\b(2DxFX)\b[\""\'\\/]",
+                }
             };
 
             var analyzer = container.Resolve<IUnityProjectAnalyzer>();
@@ -35,20 +42,33 @@ namespace UnityEngineAnalyzer.CMD
             //Log short info to console
             foreach (var result in analyzerResults)
             {
-                string resultLine = System.IO.Path.GetFileName(result.FileName) + ":" + result.LineNumber + ". " + result.Message;
-                switch(result.Severity)
+                bool foundExcludeMatch = false;
+                foreach(var excludePattern in mockOptions.ExcludePathPatterns)
                 {
-                    case SimpleDiagnostic.SimpleSeverity.Error:
-                        log.Error(resultLine);
+                    if (Regex.Match(result.FileName, excludePattern).Success)
+                    {
+                        foundExcludeMatch = true;
                         break;
-                    case SimpleDiagnostic.SimpleSeverity.Warning:
-                        log.Warning(resultLine);
-                        break;
-                    case SimpleDiagnostic.SimpleSeverity.Info:
-                    case SimpleDiagnostic.SimpleSeverity.Hidden:
-                    default:
-                        log.Info(resultLine);
-                        break;
+                    }
+                }
+
+                if (!foundExcludeMatch)
+                {
+                    string resultLine = "(" + result.Id + ") " + System.IO.Path.GetFileName(result.FileName) + ":" + result.LineNumber + ". " + result.Message;
+                    switch (result.Severity)
+                    {
+                        case SimpleDiagnostic.SimpleSeverity.Error:
+                            log.Error(resultLine);
+                            break;
+                        case SimpleDiagnostic.SimpleSeverity.Warning:
+                            log.Warning(resultLine);
+                            break;
+                        case SimpleDiagnostic.SimpleSeverity.Info:
+                        case SimpleDiagnostic.SimpleSeverity.Hidden:
+                        default:
+                            log.Info(resultLine);
+                            break;
+                    }
                 }
             }
         }
