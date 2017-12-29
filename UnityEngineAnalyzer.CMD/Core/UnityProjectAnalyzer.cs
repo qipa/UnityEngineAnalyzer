@@ -7,17 +7,23 @@ namespace UnityEngineAnalyzer.CMD.Core
 {
     public class UnityProjectAnalyzer : IUnityProjectAnalyzer
     {
+        ILog _log;
         IDirectoryUtility _directoryUtility;
         IFileUtility _fileUtility;
         ICSProjAnalyzer _csprojAnalyzer;
         UnityProjectInfoCollector _projectInfoCollector;
 
-        public UnityProjectAnalyzer(IDirectoryUtility directoryUtility, 
+        public UnityProjectAnalyzer(ILog log,
+                                    IDirectoryUtility directoryUtility, 
                                     IFileUtility fileUtility,
                                     ICSProjAnalyzer csprojAnalyzer,
                                     UnityProjectInfoCollector projectInfoCollector)
         {
-            if (directoryUtility == null)
+            if (log == null)
+            {
+                throw new System.ArgumentNullException("log");
+            }
+            else if (directoryUtility == null)
             {
                 throw new System.ArgumentNullException("directoryUtility");
             }
@@ -33,6 +39,7 @@ namespace UnityEngineAnalyzer.CMD.Core
             {
                 throw new System.ArgumentNullException("projectInfoCollector");
             }
+            _log = log;
             _directoryUtility = directoryUtility;
             _fileUtility = fileUtility;
             _csprojAnalyzer = csprojAnalyzer;
@@ -53,7 +60,7 @@ namespace UnityEngineAnalyzer.CMD.Core
             }
 
             var projectInfo = _projectInfoCollector.Collect(options.ProjectDirectoryPath);
-            System.Console.WriteLine("Analyzing Unity Project:" + projectInfo);
+            _log.Info("Analyzing Unity Project:" + projectInfo);
             var waitObjects = new List<Task<ImmutableArray<SimpleDiagnostic>>>();
             foreach (var projectFilePath in projectInfo.CSProjFilePaths)
             {

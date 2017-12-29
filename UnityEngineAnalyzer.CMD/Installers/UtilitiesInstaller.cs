@@ -9,6 +9,7 @@ namespace UnityEngineAnalyzer.CMD.Installers
         {
             Container.Bind<IFileUtility>().To<FileUtility>().AsSingle();
             Container.Bind<IDirectoryUtility>().To<DirectoryUtility>().AsSingle();
+            Container.Bind<ILog>().To<SystemConsoleLog>().AsSingle();
         }
     }
 }
