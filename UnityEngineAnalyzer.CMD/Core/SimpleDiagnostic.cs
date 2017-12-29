@@ -22,7 +22,8 @@ namespace UnityEngineAnalyzer.CMD.Core
 
         public override string ToString()
         {
-            return string.Format("Id:{0}, Message:{1}, FileName:{2}, LineNumber:{3}, CharacterPosition:{4}, Severity{5}, UnityVersionSpan:{6}", Id, Message, FileName, LineNumber, CharacterPosition, Severity, VersionSpan);
+            var versionSpan = VersionSpan.First.ToString() + " - " + VersionSpan.Last.ToString();
+            return string.Format("Id:{0}, Message:{1}, FileName:{2}, LineNumber:{3}, CharacterPosition:{4}, Severity{5}, UnityVersionSpan:{6}", Id, Message, FileName, LineNumber, CharacterPosition, Severity, versionSpan);
         }
 
         public static SimpleDiagnostic Convert(Diagnostic diagnostic)

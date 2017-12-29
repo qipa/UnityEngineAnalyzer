@@ -43,12 +43,6 @@ namespace UnityEngineAnalyzer.CMD.Core
             var analyzers = GetAnalyzers();
             var compilation = await project.GetCompilationAsync();
             var diagnosticResults = await compilation.WithAnalyzers(analyzers).GetAnalyzerDiagnosticsAsync();
-
-            Console.WriteLine("HEYHEY I'm Done!:" + diagnosticResults);
-            foreach(var result in diagnosticResults)
-            {
-                Console.WriteLine(result.Descriptor.Title + ". Location:" + result.Location.ToString());
-            }
             return await Task<ImmutableArray<SimpleDiagnostic>>.Run(() => ConvertDiagnosticResults(diagnosticResults));
         }
 
@@ -58,7 +52,10 @@ namespace UnityEngineAnalyzer.CMD.Core
             var listBuilder = ImmutableArray.CreateBuilder<SimpleDiagnostic>();
             foreach (var result in diagnosticResults)
             {
-                SimpleDiagnostic.Convert(result);
+                if (result.Descriptor.Id != "AD0001") ///AnalyzerFailure
+                {
+                    listBuilder.Add(SimpleDiagnostic.Convert(result));
+                }
             }
             return listBuilder.ToImmutable();
         }

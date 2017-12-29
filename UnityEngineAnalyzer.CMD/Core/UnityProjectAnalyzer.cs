@@ -40,14 +40,14 @@ namespace UnityEngineAnalyzer.CMD.Core
         }
 
         /// <inheritdoc />
-        public void Analyze(Options options)
+        ImmutableArray<SimpleDiagnostic> IUnityProjectAnalyzer.Analyze(Options options)
         {
             if (options == null)
             {
                 throw new System.ArgumentNullException("options");
             }
-            
-            if(!_directoryUtility.Exists(options.ProjectDirectoryPath))
+
+            if (!_directoryUtility.Exists(options.ProjectDirectoryPath))
             {
                 throw new System.InvalidOperationException("Directory does not exist! " + options.ProjectDirectoryPath);
             }
@@ -55,21 +55,28 @@ namespace UnityEngineAnalyzer.CMD.Core
             var projectInfo = _projectInfoCollector.Collect(options.ProjectDirectoryPath);
             System.Console.WriteLine("Analyzing Unity Project:" + projectInfo);
             var waitObjects = new List<Task<ImmutableArray<SimpleDiagnostic>>>();
-            foreach(var projectFilePath in projectInfo.CSProjFilePaths)
+            foreach (var projectFilePath in projectInfo.CSProjFilePaths)
             {
                 waitObjects.Add(_csprojAnalyzer.LoadAndAnalyzeAsync(projectFilePath));
             }
             Task.WaitAll(waitObjects.ToArray());
 
-            foreach(var waitObject in waitObjects)
+            var listBuilder = ImmutableArray.CreateBuilder<SimpleDiagnostic>();
+            foreach (var waitObject in waitObjects)
             {
                 var results = waitObject.Result;
-                foreach(var result in results)
-                {
-                    System.Console.WriteLine(result);
-                }
+                listBuilder.AddRange(waitObject.Result);
             }
-            System.Console.WriteLine("ANALYZE DONE!");
+            listBuilder.Sort((a, b) =>
+            {
+                var severity = a.Severity.CompareTo(b.Severity);
+                if(severity == 0)
+                {
+                    return a.Id.CompareTo(b.Id);
+                }
+                return severity;
+            });
+            return listBuilder.ToImmutable();
         }
     }
 }

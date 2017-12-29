@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Immutable;
 
 namespace UnityEngineAnalyzer.CMD.Core
 {
     public interface IUnityProjectAnalyzer
     {
-        void Analyze(Options options);
+        ImmutableArray<SimpleDiagnostic> Analyze(Options options);
     }
 }
