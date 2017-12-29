@@ -14,7 +14,7 @@ namespace UnityEngineAnalyzer.CMD.Core
 
         public string Id { get; set; }
         public string Message { get; set; }
-        public string FileName { get; set; }
+        public string FilePath { get; set; }
         public int LineNumber { get; set; }
         public int CharacterPosition { get; set; }
         public SimpleSeverity Severity { get; set; }
@@ -23,7 +23,7 @@ namespace UnityEngineAnalyzer.CMD.Core
         public override string ToString()
         {
             var versionSpan = VersionSpan.First.ToString() + " - " + VersionSpan.Last.ToString();
-            return string.Format("Id:{0}, Message:{1}, FileName:{2}, LineNumber:{3}, CharacterPosition:{4}, Severity{5}, UnityVersionSpan:{6}", Id, Message, FileName, LineNumber, CharacterPosition, Severity, versionSpan);
+            return string.Format("Id:{0}, Message:{1}, FileName:{2}, LineNumber:{3}, CharacterPosition:{4}, Severity{5}, UnityVersionSpan:{6}", Id, Message, FilePath, LineNumber, CharacterPosition, Severity, versionSpan);
         }
 
         public static SimpleDiagnostic Convert(Diagnostic diagnostic)
@@ -46,7 +46,7 @@ namespace UnityEngineAnalyzer.CMD.Core
             {
                 Id = diagnostic.Id,
                 Message = diagnostic.GetMessage(),
-                FileName = fileName,
+                FilePath = fileName,
                 LineNumber = lineNumber,
                 CharacterPosition = characterPosition,
                 Severity = (SimpleSeverity)diagnostic.Severity,

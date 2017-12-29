@@ -45,7 +45,7 @@ namespace UnityEngineAnalyzer.CMD
                 bool foundExcludeMatch = false;
                 foreach(var excludePattern in mockOptions.ExcludePathPatterns)
                 {
-                    if (Regex.Match(result.FileName, excludePattern).Success)
+                    if (Regex.Match(result.FilePath, excludePattern).Success)
                     {
                         foundExcludeMatch = true;
                         break;
@@ -54,7 +54,7 @@ namespace UnityEngineAnalyzer.CMD
 
                 if (!foundExcludeMatch)
                 {
-                    string resultLine = "(" + result.Id + ") " + System.IO.Path.GetFileName(result.FileName) + ":" + result.LineNumber + ". " + result.Message;
+                    string resultLine = "(" + result.Id + ") " + System.IO.Path.GetFileName(result.FilePath) + ":" + result.LineNumber + ". " + result.Message;
                     switch (result.Severity)
                     {
                         case SimpleDiagnostic.SimpleSeverity.Error:
