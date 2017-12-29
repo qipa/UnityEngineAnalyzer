@@ -7,6 +7,7 @@ namespace UnityEngineAnalyzer.CMD.Installers
     {
         public override void InstallBindings()
         {
+            Container.Bind<ICSProjAnalyzer>().To<CSProjAnalyzer>().AsSingle();
             Container.BindInterfacesAndSelfTo<UnityProjectInfoCollector>().AsSingle();
             Container.Bind<IUnityProjectAnalyzer>().To<UnityProjectAnalyzer>().AsSingle();
         }

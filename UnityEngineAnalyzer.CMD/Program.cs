@@ -24,7 +24,7 @@ namespace UnityEngineAnalyzer.CMD
 
             var mockOptions = new Options()
             {
-                ProjectDirectoryPath = "MYTEMPPATH"
+                ProjectDirectoryPath = "E:\\Bitbucket\\Work\\commanders\\"
             };
 
             var analyzer = container.Resolve<IUnityProjectAnalyzer>();
