@@ -9,5 +9,11 @@ namespace UnityEngineAnalyzer.CMD.Utilities
         {
             return File.Exists(path);
         }
+
+        /// <inheritdoc />
+        public string ReadAllText(string path)
+        {
+            return File.ReadAllText(path);
+        }
     }
 }

@@ -24,7 +24,7 @@ namespace UnityEngineAnalyzer.CMD
 
             var mockOptions = new Options()
             {
-                ProjectDirectoryPath = "MYDIRPATH"
+                ProjectDirectoryPath = "MYTEMPPATH"
             };
 
             var analyzer = container.Resolve<IUnityProjectAnalyzer>();
@@ -32,7 +32,7 @@ namespace UnityEngineAnalyzer.CMD
             /*
 
             var ws = MSBuildWorkspace.Create();
-            var soln = ws.OpenSolutionAsync(@"E:\Bitbucket\Work\commanders\commanders.sln").Result;
+            var soln = ws.OpenSolutionAsync(@"MYDIRPATH").Result;
             var proj = soln.Projects.Single();
             var compilation = proj.GetCompilationAsync().Result;
 
