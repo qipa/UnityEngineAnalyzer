@@ -2,6 +2,7 @@
 
 namespace UnityEngineAnalyzer.CMD.Core
 {
+    [System.Serializable]
     public class SimpleDiagnostic
     {
         public enum SimpleSeverity

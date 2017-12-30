@@ -16,5 +16,11 @@
         /// <param name="searchPattern">(Optional) The regex match pattern in which files to include. Defaults to "*"</param>
         /// <returns>The files found in the directory. Throws an exception if the directory does not exist</returns>
         string[] GetFiles(string path, string searchPattern = "*");
+
+        /// <summary>
+        /// Creates a folder at a given path
+        /// </summary>
+        /// <param name="path">The directory path to the folder to create</param>
+        void Create(string path);
     }
 }

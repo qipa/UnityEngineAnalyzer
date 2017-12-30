@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.Text;
 using UnityEngineAnalyzer.CMD.Core;
 using UnityEngineAnalyzer.CMD.Installers;
+using UnityEngineAnalyzer.CMD.Reporting;
 using UnityEngineAnalyzer.CMD.Utilities;
 using Zenject;
 
@@ -25,11 +26,14 @@ namespace UnityEngineAnalyzer.CMD
             var container = new DiContainer();
             UtilitiesInstaller.Install(container);
             CoreInstaller.Install(container);
+            ReportingInstaller.Install(container);
             var log = container.Resolve<ILog>();
+            var directoryUtility = container.Resolve<IDirectoryUtility>();
+            var fileUtility = container.Resolve<IFileUtility>();
 
             var mockOptions = new Options()
             {
-                ProjectDirectoryPath = "MYFOLDER",
+                ProjectDirectoryPath = "MYDIRECTORY",
                 ExcludePathPatterns = new string[] {
                     @"[\""\'\\/]\b(ThirdParty)\b[\""\'\\/]",
                     @"[\""\'\\/]\b(2DxFX)\b[\""\'\\/]",
@@ -70,6 +74,21 @@ namespace UnityEngineAnalyzer.CMD
                             break;
                     }
                 }
+            }
+
+            var exportDirectoryPath = mockOptions.ProjectDirectoryPath + "\\report";
+            if(!directoryUtility.Exists(exportDirectoryPath))
+            {
+                directoryUtility.Create(exportDirectoryPath);
+            }
+            var projectFolderName = new System.IO.DirectoryInfo(mockOptions.ProjectDirectoryPath).Name;
+
+            var exporters = container.ResolveAll<IAnalyzerReporter>();
+            foreach(var exporter in exporters)
+            {
+                var pathToExport = exportDirectoryPath + "\\" + projectFolderName + "_report." + exporter.DefaultFileEnding;
+                fileUtility.WriteAllBytes(pathToExport, exporter.BuildReportData(analyzerResults));
+                log.Info("Exported report to " + pathToExport);
             }
         }
     }

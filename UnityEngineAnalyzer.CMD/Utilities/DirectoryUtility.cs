@@ -6,6 +6,12 @@ namespace UnityEngineAnalyzer.CMD.Utilities
     public class DirectoryUtility : IDirectoryUtility
     {
         /// <inheritdoc />
+        public void Create(string path)
+        {
+            Directory.CreateDirectory(path);
+        }
+
+        /// <inheritdoc />
         public bool Exists(string path)
         {
             return Directory.Exists(path);

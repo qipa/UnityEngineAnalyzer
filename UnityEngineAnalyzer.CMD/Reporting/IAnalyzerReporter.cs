@@ -3,9 +3,9 @@ using UnityEngineAnalyzer.CMD.Core;
 
 namespace UnityEngineAnalyzer.CMD.Reporting
 {
-    public interface IAnalyzerExporter
+    public interface IAnalyzerReporter
     {
         string DefaultFileEnding { get; }
-        byte[] Export(ImmutableArray<SimpleDiagnostic> diagnosticResults);
+        byte[] BuildReportData(ImmutableArray<SimpleDiagnostic> diagnosticResults);
     }
 }

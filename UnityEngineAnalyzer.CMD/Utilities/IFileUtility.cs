@@ -15,5 +15,12 @@
         /// <param name="path">The full path to the file</param>
         /// <returns>The text content of the file</returns>
         string ReadAllText(string path);
+
+        /// <summary>
+        /// Writes a byte array to a given file path
+        /// </summary>
+        /// <param name="path">The path to write the file to</param>
+        /// <param name="contents">the contents of the file</param>
+        void WriteAllBytes(string path, byte[] contents);
     }
 }

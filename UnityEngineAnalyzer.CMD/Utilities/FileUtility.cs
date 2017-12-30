@@ -15,5 +15,11 @@ namespace UnityEngineAnalyzer.CMD.Utilities
         {
             return File.ReadAllText(path);
         }
+
+        /// <inheritdoc />
+        public void WriteAllBytes(string path, byte[] contents)
+        {
+            File.WriteAllBytes(path, contents);
+        }
     }
 }
