@@ -19,19 +19,15 @@ namespace UnityEngineAnalyzer.CMD
 {
     class Program
     {
-        public static bool Regexp { get; private set; }
-
         static void Main(string[] args)
         {
             var container = new DiContainer();
             UtilitiesInstaller.Install(container);
             CoreInstaller.Install(container);
             ReportingInstaller.Install(container);
-            var log = container.Resolve<ILog>();
-            var directoryUtility = container.Resolve<IDirectoryUtility>();
-            var fileUtility = container.Resolve<IFileUtility>();
-            var filterer = container.Resolve<SimpleDiagnosticFilterer>();
+            ClientInstaller.Install(container);
 
+            //TODO:: Create a launch options that can be converted into options
             var options = new Options()
             {
                 ProjectDirectoryPath = "MYPROJECTDIRECTORY",
@@ -41,42 +37,8 @@ namespace UnityEngineAnalyzer.CMD
                 }
             };
 
-            var analyzer = container.Resolve<IUnityProjectAnalyzer>();
-            var filteredResults = filterer.GetFilteredList(analyzer.Analyze(options), options.ExcludePathPatterns);
-
-            //Log short info to console
-            foreach (var result in filteredResults)
-            {
-                string resultLine = "(" + result.Id + ") " + System.IO.Path.GetFileName(result.FilePath) + ":" + result.LineNumber + ". " + result.Message;
-                switch (result.Severity)
-                {
-                    case SimpleDiagnostic.SimpleSeverity.Error:
-                        log.Error(resultLine);
-                        break;
-                    case SimpleDiagnostic.SimpleSeverity.Warning:
-                        log.Warning(resultLine);
-                        break;
-                    case SimpleDiagnostic.SimpleSeverity.Info:
-                    case SimpleDiagnostic.SimpleSeverity.Hidden:
-                    default:
-                        log.Info(resultLine);
-                        break;
-                }
-            }
-
-            var exportDirectoryPath = options.ProjectDirectoryPath + "\\report";
-            if(!directoryUtility.Exists(exportDirectoryPath))
-            {
-                directoryUtility.Create(exportDirectoryPath);
-            }
-
-            var exporters = container.ResolveAll<IAnalyzerReporter>();
-            foreach(var exporter in exporters)
-            {
-                var pathToExport = exportDirectoryPath + "\\" + options.ProjectName + "_report." + exporter.DefaultFileEnding;
-                fileUtility.WriteAllBytes(pathToExport, exporter.BuildReportData(filteredResults, options));
-                log.Info("Exported report to " + pathToExport);
-            }
+            var client = container.Resolve<UnityEngineAnalyzerClient>();
+            client.AnalyzeProject(options);
         }
     }
 }
