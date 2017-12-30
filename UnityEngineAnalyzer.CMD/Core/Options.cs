@@ -11,7 +11,19 @@ namespace UnityEngineAnalyzer.CMD.Core
     /// </summary>
     public class Options
     {
+        string _projectName = null;
         public string ProjectDirectoryPath { get; set; }
         public string[] ExcludePathPatterns { get; set; }
+        public string ProjectName 
+        {
+            get
+            {
+                if(string.IsNullOrEmpty(_projectName))
+                {
+                    _projectName = new System.IO.DirectoryInfo(ProjectDirectoryPath).Name;
+                }
+                return _projectName;
+            }
+        }
     }
 }

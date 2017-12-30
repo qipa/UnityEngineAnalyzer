@@ -6,6 +6,6 @@ namespace UnityEngineAnalyzer.CMD.Reporting
     public interface IAnalyzerReporter
     {
         string DefaultFileEnding { get; }
-        byte[] BuildReportData(ImmutableArray<SimpleDiagnostic> diagnosticResults);
+        byte[] BuildReportData(ImmutableArray<SimpleDiagnostic> diagnosticResults, Options options);
     }
 }

@@ -30,10 +30,11 @@ namespace UnityEngineAnalyzer.CMD
             var log = container.Resolve<ILog>();
             var directoryUtility = container.Resolve<IDirectoryUtility>();
             var fileUtility = container.Resolve<IFileUtility>();
+            var filterer = container.Resolve<SimpleDiagnosticFilterer>();
 
-            var mockOptions = new Options()
+            var options = new Options()
             {
-                ProjectDirectoryPath = "MYDIRECTORY",
+                ProjectDirectoryPath = "MYPROJECTDIRECTORY",
                 ExcludePathPatterns = new string[] {
                     @"[\""\'\\/]\b(ThirdParty)\b[\""\'\\/]",
                     @"[\""\'\\/]\b(2DxFX)\b[\""\'\\/]",
@@ -41,53 +42,39 @@ namespace UnityEngineAnalyzer.CMD
             };
 
             var analyzer = container.Resolve<IUnityProjectAnalyzer>();
-            var analyzerResults = analyzer.Analyze(mockOptions);
+            var filteredResults = filterer.GetFilteredList(analyzer.Analyze(options), options.ExcludePathPatterns);
 
             //Log short info to console
-            foreach (var result in analyzerResults)
+            foreach (var result in filteredResults)
             {
-                bool foundExcludeMatch = false;
-                foreach(var excludePattern in mockOptions.ExcludePathPatterns)
+                string resultLine = "(" + result.Id + ") " + System.IO.Path.GetFileName(result.FilePath) + ":" + result.LineNumber + ". " + result.Message;
+                switch (result.Severity)
                 {
-                    if (Regex.Match(result.FilePath, excludePattern).Success)
-                    {
-                        foundExcludeMatch = true;
+                    case SimpleDiagnostic.SimpleSeverity.Error:
+                        log.Error(resultLine);
                         break;
-                    }
-                }
-
-                if (!foundExcludeMatch)
-                {
-                    string resultLine = "(" + result.Id + ") " + System.IO.Path.GetFileName(result.FilePath) + ":" + result.LineNumber + ". " + result.Message;
-                    switch (result.Severity)
-                    {
-                        case SimpleDiagnostic.SimpleSeverity.Error:
-                            log.Error(resultLine);
-                            break;
-                        case SimpleDiagnostic.SimpleSeverity.Warning:
-                            log.Warning(resultLine);
-                            break;
-                        case SimpleDiagnostic.SimpleSeverity.Info:
-                        case SimpleDiagnostic.SimpleSeverity.Hidden:
-                        default:
-                            log.Info(resultLine);
-                            break;
-                    }
+                    case SimpleDiagnostic.SimpleSeverity.Warning:
+                        log.Warning(resultLine);
+                        break;
+                    case SimpleDiagnostic.SimpleSeverity.Info:
+                    case SimpleDiagnostic.SimpleSeverity.Hidden:
+                    default:
+                        log.Info(resultLine);
+                        break;
                 }
             }
 
-            var exportDirectoryPath = mockOptions.ProjectDirectoryPath + "\\report";
+            var exportDirectoryPath = options.ProjectDirectoryPath + "\\report";
             if(!directoryUtility.Exists(exportDirectoryPath))
             {
                 directoryUtility.Create(exportDirectoryPath);
             }
-            var projectFolderName = new System.IO.DirectoryInfo(mockOptions.ProjectDirectoryPath).Name;
 
             var exporters = container.ResolveAll<IAnalyzerReporter>();
             foreach(var exporter in exporters)
             {
-                var pathToExport = exportDirectoryPath + "\\" + projectFolderName + "_report." + exporter.DefaultFileEnding;
-                fileUtility.WriteAllBytes(pathToExport, exporter.BuildReportData(analyzerResults));
+                var pathToExport = exportDirectoryPath + "\\" + options.ProjectName + "_report." + exporter.DefaultFileEnding;
+                fileUtility.WriteAllBytes(pathToExport, exporter.BuildReportData(filteredResults, options));
                 log.Info("Exported report to " + pathToExport);
             }
         }

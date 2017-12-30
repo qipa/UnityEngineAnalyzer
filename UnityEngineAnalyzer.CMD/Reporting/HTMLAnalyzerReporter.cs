@@ -15,7 +15,7 @@ namespace UnityEngineAnalyzer.CMD.Reporting
         [System.Serializable]
         class HTMLReportData
         {
-            public string SourceFile;
+            public string ProjectName;
             public ImmutableArray<SimpleDiagnostic> Diagnostics;
             public DateTime Date;
         }
@@ -52,18 +52,18 @@ namespace UnityEngineAnalyzer.CMD.Reporting
             _fileUtility = fileUtility;
         }
 
-        public byte[] BuildReportData(ImmutableArray<SimpleDiagnostic> diagnosticResults)
+        public byte[] BuildReportData(ImmutableArray<SimpleDiagnostic> diagnosticResults, Options options)
         {
             string fullhtml = HTMLTemplateContents;
-            fullhtml = fullhtml.Replace(ReplaceIdentifier, BuildJSONReportData(diagnosticResults));
+            fullhtml = fullhtml.Replace(ReplaceIdentifier, BuildJSONReportData(diagnosticResults, options));
             return Encoding.UTF8.GetBytes(fullhtml);
         }
 
-        string BuildJSONReportData(ImmutableArray<SimpleDiagnostic> diagnosticResults)
+        string BuildJSONReportData(ImmutableArray<SimpleDiagnostic> diagnosticResults, Options options)
         {
             return JsonConvert.SerializeObject(new HTMLReportData()
             {
-                SourceFile = "HEJHEJ",
+                ProjectName = options.ProjectName,
                 Diagnostics = diagnosticResults,
                 Date = DateTime.Now
             });

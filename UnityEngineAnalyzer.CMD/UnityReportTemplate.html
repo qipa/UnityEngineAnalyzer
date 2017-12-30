@@ -22,7 +22,7 @@
 <div class="container" ng-controller="ReportController as Report">
     <div class="page-header">
         <h1>Unity Engine Analyzer Report</h1>
-        <p>{{Report.SourceFile}}<small> - {{Report.Date | date : 'medium'}}</small></p>
+        <p>{{Report.ProjectName}}<small> - {{Report.Date | date : 'medium'}}</small></p>
         
     </div>
     <table class="table table-striped">
@@ -57,7 +57,7 @@
             var report = this;
 			var unparsedReport = document.getElementById('reportdata').innerHTML;
 			var parsedReport = JSON.parse(unparsedReport);
-			report.SourceFile = parsedReport.SourceFile;
+			report.ProjectName = parsedReport.ProjectName;
 			report.Diagnostics = parsedReport.Diagnostics;
 			report.Date = parsedReport.Date;
         }]);
